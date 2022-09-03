@@ -1,7 +1,11 @@
+import Card from './UI/Card';
 import './Users.css';
+
+
 const Users = () => {
   return (
-    <div class="container">
+    <Card>
+      <h1>List of Users</h1>
       <table>
   <thead>
     <tr>
@@ -45,7 +49,7 @@ const Users = () => {
    </tr>
   </tbody>
 </table>
-    </div>
+    </Card>
   );
 };
 
