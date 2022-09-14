@@ -1,8 +1,20 @@
 import Card from './UI/Card';
+
+import { useSelector  } from 'react-redux';
+import { useDispatch } from "react-redux";
+import { userActions } from "../store/user-slice";
 import './Users.css';
 
 
 const Users = () => {
+  const dispatch = useDispatch();
+  const deleteHandler = (event) => {
+    console.log(event.target.value)
+dispatch(userActions.removeUser({userId: event.target.value}));
+  };
+  const users = useSelector(state => state.users);
+ 
+
   return (
     <Card>
       <h1>List of Users</h1>
@@ -15,38 +27,27 @@ const Users = () => {
       <th>Age</th>
       <th>Gender</th>
       <th>Height</th>
+      <th>Delete</th>
+      <th>Edit</th>
      
       </tr>
   </thead>
   <tbody>
-    <tr>
+    {users.map(user => (<tr key={user.id}>
       
-      <td>Malcolm</td>
-      <td>Mal, Cap'n</td>
-      <td>Reynolds</td>
-      <td>Mal, Cap'n</td>
-      <td>M</td>
+      <td>{user.firstName}</td>
+      <td>{user.lastName}</td>
+      <td>{user.age}</td>
+      <td>{user.gender}</td>
+      <td>{user.height}</td>
+      <td><button onClick={deleteHandler} value={user.id}>Delete</button></td>
+      <td><button>Edit</button></td>
       
       
-      </tr>
-    <tr>
+      </tr>))}
     
-      <td>Zoe</td>
-      <td>Washburn</td>
-      <td>Zoe</td>
-      <td>F</td>
-      <td>First Mate</td>
-      
-      </tr>
-    <tr class="disabled">
-  
-      <td>Hoban</td>
-      <td>Washburn</td>
-      <td>Wash</td>
-      <td>M</td>
-      <td>Pilot</td>
-      
-   </tr>
+    
+   
   </tbody>
 </table>
     </Card>

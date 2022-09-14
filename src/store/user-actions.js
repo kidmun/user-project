@@ -1,73 +1,84 @@
 import { userActions } from './user-slice';
 
+export const fetchUserData = () => {
+  return async (dispatch) => {
+    const fetchData = async () => {
+      const response = await fetch(
+        'https://user-project-c2bab-default-rtdb.firebaseio.com/users.json'
+      );
 
-export const fetchUsers = () => {
-    return async (dispatch) => {
+      if (!response.ok) {
+        throw new Error('Could not fetch user data!');
+      }
 
+      const data = await response.json();
 
-        const fetchData = async () => {
-            const response = await fetch('https://test-c11fd-default-rtdb.firebaseio.com/users.json');
-            if (!response.ok){
-              throw new Error('Fetching failed');   
-            }
-            const responseData = await response.json();
+      return data;
+    };
 
-            return responseData;
-        }
-        try {
-            const users = await fetchUsers();
-            dispatch(userActions.replaceUsers({users}));
-        }
-        catch (err){
-            dispatch(userActions.showNotification({
-                status: 'error',
-                title: 'Error',
-                message: 'fetching data failed'
-              
-              }))
-        }
-
+    try {
+      const userData = await fetchData();
+      dispatch(
+        userActions.replaceUsers({
+          users: userData.users || [],
+              })
+      );
+    } catch (error) {
+      dispatch(
+        userActions.showNotification({
+          status: 'error',
+          title: 'Error!',
+          message: 'Fetching cart data failed!',
+        })
+      );
     }
+  };
 };
 
-export const sendUser = (user) => {
-    return async (dispatch) => {
-      dispatch(userActions.showNotification({
-        status: 'pending', 
-        title: 'sending', 
-        message: 'sending user data'
-      }));
-      const sendRequest = async () => {
-        const response = await fetch('https://test-c11fd-default-rtdb.firebaseio.com/users.json', {
+export const sendUserData = (users) => {
+  return async (dispatch) => {
+    dispatch(
+      userActions.showNotification({
+        status: 'pending',
+        title: 'Sending...',
+        message: 'Sending user data!',
+      })
+    );
+
+    const sendRequest = async () => {
+      const response = await fetch(
+        'https://user-project-c2bab-default-rtdb.firebaseio.com/users.json',
+        {
           method: 'PUT',
-          body: JSON.stringify(users)
-        });
-  
-        if (!response.ok){
-          throw new Error('sending user data failed');
+          body: JSON.stringify({
+            users: users   
+          }),
         }
-       
+      );
+
+      if (!response.ok) {
+        throw new Error('Sending cart data failed.');
       }
-  
-      try {
-        await sendRequest();
-      }
-      catch (Error){
-        dispatch(userActions.showNotification({
-          status: 'error',
-          title: 'Error',
-          message: 'sendind data failed'
-        
-        }))
-      }
-      
-      
-        dispatch(userActions.showNotification({
+    };
+
+    try {
+      await sendRequest();
+
+      dispatch(
+       userActions.showNotification({
           status: 'success',
-          title: 'success',
-          message: 'sent user data successfully'
-        
-        }))
+          title: 'Success!',
+          message: 'Sent user data successfully!',
+        })
+      );
+    } catch (error) {
+      dispatch(
+        userActions.showNotification({
+          status: 'error',
+          title: 'Error!',
+          message: 'Sending user data failed!',
+        })
+      );
     }
-    
-  }
+  };
+};
