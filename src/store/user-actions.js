@@ -1,14 +1,14 @@
-import { userActions } from './user-slice';
+import { userActions } from "./user-slice";
 
 export const fetchUserData = () => {
   return async (dispatch) => {
     const fetchData = async () => {
       const response = await fetch(
-        'https://user-project-c2bab-default-rtdb.firebaseio.com/users.json'
+        "https://user-project-c2bab-default-rtdb.firebaseio.com/users.json"
       );
 
       if (!response.ok) {
-        throw new Error('Could not fetch user data!');
+        throw new Error("Could not fetch user data!");
       }
 
       const data = await response.json();
@@ -21,14 +21,14 @@ export const fetchUserData = () => {
       dispatch(
         userActions.replaceUsers({
           users: userData.users || [],
-              })
+        })
       );
     } catch (error) {
       dispatch(
         userActions.showNotification({
-          status: 'error',
-          title: 'Error!',
-          message: 'Fetching cart data failed!',
+          status: "error",
+          title: "Error!",
+          message: "Fetching  user data failed!",
         })
       );
     }
@@ -39,25 +39,25 @@ export const sendUserData = (users) => {
   return async (dispatch) => {
     dispatch(
       userActions.showNotification({
-        status: 'pending',
-        title: 'Sending...',
-        message: 'Sending user data!',
+        status: "pending",
+        title: "Sending...",
+        message: "Sending user data!",
       })
     );
 
     const sendRequest = async () => {
       const response = await fetch(
-        'https://user-project-c2bab-default-rtdb.firebaseio.com/users.json',
+        "https://user-project-c2bab-default-rtdb.firebaseio.com/users.json",
         {
-          method: 'PUT',
+          method: "PUT",
           body: JSON.stringify({
-            users: users   
+            users: users,
           }),
         }
       );
 
       if (!response.ok) {
-        throw new Error('Sending cart data failed.');
+        throw new Error("Sending user data failed.");
       }
     };
 
@@ -65,18 +65,18 @@ export const sendUserData = (users) => {
       await sendRequest();
 
       dispatch(
-       userActions.showNotification({
-          status: 'success',
-          title: 'Success!',
-          message: 'Sent user data successfully!',
+        userActions.showNotification({
+          status: "success",
+          title: "Success!",
+          message: "Sent user data successfully!",
         })
       );
     } catch (error) {
       dispatch(
         userActions.showNotification({
-          status: 'error',
-          title: 'Error!',
-          message: 'Sending user data failed!',
+          status: "error",
+          title: "Error!",
+          message: "Sending user data failed!",
         })
       );
     }

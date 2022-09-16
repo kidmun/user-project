@@ -1,8 +1,7 @@
 import useInput from "./hooks/use-input";
 import Card from "./UI/Card";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../store/user-slice";
-
 
 import "./AddUser.css";
 
@@ -12,16 +11,18 @@ const isGender = (value) =>
 
 const AddUser = (props) => {
   const dispatch = useDispatch();
-  
 
-  const {
+  const updating = useSelector((state) => state.updating);
+  const updateId = useSelector((state) => state.updateId);
+
+  let {
     value: firstNameValue,
     isValid: firstNameIsValid,
     hasError: firstNameHasError,
     valueChangeHandler: firstNameChangeHandler,
     inputBlurHandler: firstNameBlurHandler,
     reset: resetFirstName,
-  } = useInput(isNotEmpty);
+  } = useInput(isNotEmpty, updating);
   const {
     value: lastNameValue,
     isValid: lastNameIsValid,
@@ -29,7 +30,7 @@ const AddUser = (props) => {
     valueChangeHandler: lastNameChangeHandler,
     inputBlurHandler: lastNameBlurHandler,
     reset: resetLastName,
-  } = useInput(isNotEmpty);
+  } = useInput(isNotEmpty, updating);
   const {
     value: ageValue,
     isValid: ageIsValid,
@@ -37,7 +38,7 @@ const AddUser = (props) => {
     valueChangeHandler: ageChangeHandler,
     inputBlurHandler: ageBlurHandler,
     reset: resetAge,
-  } = useInput(isNotEmpty);
+  } = useInput(isNotEmpty, updating);
   const {
     value: genderValue,
     isValid: genderIsValid,
@@ -45,7 +46,7 @@ const AddUser = (props) => {
     valueChangeHandler: genderChangeHandler,
     inputBlurHandler: genderBlurHandler,
     reset: resetGender,
-  } = useInput(isGender);
+  } = useInput(isGender, updating);
   const {
     value: heightValue,
     isValid: heightIsValid,
@@ -53,7 +54,7 @@ const AddUser = (props) => {
     valueChangeHandler: heightChangeHandler,
     inputBlurHandler: heightBlurHandler,
     reset: resetHeight,
-  } = useInput(isNotEmpty);
+  } = useInput(isNotEmpty, updating);
 
   let formIsValid = false;
 
@@ -66,6 +67,9 @@ const AddUser = (props) => {
   ) {
     formIsValid = true;
   }
+  const cancelHandler = () => {
+    dispatch(userActions.turnOffUpdating());
+  };
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -88,20 +92,26 @@ const AddUser = (props) => {
       age: ageValue,
       gender: genderValue,
       height: heightValue,
-    }
+    };
 
-   
-    dispatch(userActions.addUser(user));   
+    if (updating) {
+      dispatch(userActions.updateUsers({ userId: updateId, user: user }));
+      dispatch(userActions.turnOffUpdating());
+      resetFirstName();
+      resetLastName();
+      resetAge();
+      resetGender();
+      resetHeight();
+
+      return;
+    }
+    dispatch(userActions.addUser(user));
+
     resetFirstName();
     resetLastName();
     resetAge();
     resetGender();
     resetHeight();
-
-
-  
-
-   
   };
 
   const firstNameClasses = firstNameHasError
@@ -177,7 +187,7 @@ const AddUser = (props) => {
             )}
           </div>
           <div className={heightClasses}>
-            <label htmlFor="height">Height</label>
+            <label htmlFor="height">Height(m)</label>
             <input
               type="number"
               id="height"
@@ -192,7 +202,8 @@ const AddUser = (props) => {
         </div>
 
         <div className="form-actions">
-          <button disabled={!formIsValid}>Add</button>
+          {updating && <button onClick={cancelHandler}>Cancel</button>}
+          <button disabled={!formIsValid}>{updating ? "Edit" : "Add"}</button>
         </div>
       </form>
     </Card>

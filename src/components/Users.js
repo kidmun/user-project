@@ -1,5 +1,4 @@
-import Card from './UI/Card';
-
+import React from 'react';
 import { useSelector  } from 'react-redux';
 import { useDispatch } from "react-redux";
 import { userActions } from "../store/user-slice";
@@ -7,17 +6,25 @@ import './Users.css';
 
 
 const Users = () => {
+ 
   const dispatch = useDispatch();
   const deleteHandler = (event) => {
-    console.log(event.target.value)
+ 
 dispatch(userActions.removeUser({userId: event.target.value}));
   };
+  const editHandler = (event) => {
+  
+   dispatch(userActions.turnOnUpdating());
+    dispatch(userActions.setUpdateId({updateId: event.target.value}))
+ 
+  };
   const users = useSelector(state => state.users);
+  console.log(users);
  
 
   return (
-    <Card>
-      <h1>List of Users</h1>
+    <div className='centered'>
+     
       <table>
   <thead>
     <tr>
@@ -40,8 +47,15 @@ dispatch(userActions.removeUser({userId: event.target.value}));
       <td>{user.age}</td>
       <td>{user.gender}</td>
       <td>{user.height}</td>
-      <td><button onClick={deleteHandler} value={user.id}>Delete</button></td>
-      <td><button>Edit</button></td>
+      <td id="delete">
+      <button onClick={deleteHandler} value={user.id}>Delete</button>
+      </td>
+     
+      <td id="edit">
+   
+        <button onClick={editHandler} value={user.id} >Edit</button>
+       
+        </td>
       
       
       </tr>))}
@@ -50,7 +64,8 @@ dispatch(userActions.removeUser({userId: event.target.value}));
    
   </tbody>
 </table>
-    </Card>
+</div>
+    
   );
 };
 
